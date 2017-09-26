@@ -43,7 +43,8 @@ func readAndReplaceBody(req *http.Request) []byte {
 func (t *AWSSigningTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	payload := bytes.NewReader(readAndReplaceBody(req))
-	_, err := t.awsSigner.Sign(req, payload, t.awsServiceName, t.awsRegion, time.Now())
+	exp := time.Duration(15 * time.Minute)
+	_, err := t.awsSigner.Presign(req, payload, t.awsServiceName, t.awsRegion, exp, time.Now())
 	if err != nil {
 		return nil, err
 	}
